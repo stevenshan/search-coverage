@@ -1,23 +1,16 @@
+# ///-----------------------------------------------------------------
+# ///   Description:    <STOEC>
+# ///   Author:         <Hadi Salman>                    
+# ///   Date:           <Oct 13th 2017>
+# ///   Revision History: ---
+# ///-----------------------------------------------------------------
 import numpy as np
 from numpy import linalg
 from math import pi,exp,sqrt
 from scipy.stats import multivariate_normal
 		
 def GenerateUtilityMap(xmin,xmax,ymin,ymax,addnoise=0):
-"""Function that generates the utility map
-	
-	Args:
-		xmin(integer):
-		xmax(integer):
-		ymin(integer):
-		ymax(integer):
 
-	Returns:
-		X(matrix):
-		Y(matrix):
-		G(matrix):the information map 
-
-"""			
 	xdel=1
 	ydel=1
 	xRange=np.matrix(range(xmin,xmax+1-xdel,xdel))
@@ -31,12 +24,12 @@ def GenerateUtilityMap(xmin,xmax,ymin,ymax,addnoise=0):
 		Y[:,i]=yRange	
 
 
-	m1=[100.0,200.0]
-	s1=150.0*np.identity(2)
-	m2=[220.0,200.0]
-	s2=800.0*np.identity(2)
-	m3=[120.0,120.0]
-	s3=600.0*np.identity(2)
+	m1=[40.0 ,40.0]
+	s1=75.0*np.identity(2)
+	m2=[100.0,70.0]
+	s2=500.0*np.identity(2)
+	m3=[60.0,100.0]
+	s3=200.0*np.identity(2)
 
 	G1=np.matrix(np.zeros((X.size,1)))
 	G2=np.matrix(np.zeros((X.size,1)))
@@ -58,5 +51,6 @@ def GenerateUtilityMap(xmin,xmax,ymin,ymax,addnoise=0):
 	G=np.matrix(G1+3*G2+G3)
 	G[G<0]=0	
 	G=G/np.max(G)
+	G=G/G.sum()
 
 	return X,Y,G
