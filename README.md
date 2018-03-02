@@ -1,3 +1,4 @@
+
 # Search Coverage
 
 Biorobotics Lab work. Working on demonstrating trajectory planning with goal of optimizing ergodicity, or the coverage of areas proportional to a probability density function. Visualization is done using Unreal Engine 4 with the Microsoft AirSim plugin. The trajectory planning communicates with the simulation using a Python interface.
@@ -43,6 +44,7 @@ Register an account with Epic Games in order to get access to Unreal Engine Gith
    ```
 6. Clone and build UnrealEnginePython Plugin. Make an empty C++ project in Unreal Editor. Go to the project folder and make a new folder called `Plugins`.
    ```bash
+   sudo apt-get install python3.6-dev
    git clone https://github.com/20tab/UnrealEnginePython
    ```
    Open the project in Unreal Editor and it should say modules are missing and offer to rebuild, click rebuild.
@@ -51,3 +53,8 @@ Register an account with Epic Games in order to get access to Unreal Engine Gith
 
 1. **Pop-up from Unreal Engine saying plugin is for different engine version**: The correct UE4 version should be 4.17. If this is correct, then press `no` to ignore the warning.
 2. **Pop-up from Unreal Engine at around 73% load saying plugin could not be loaded because module was not found**: This means the plugins were not built. If the error is about AirSim, you can try copying the `Plugins/AirSim` folder from the Blocks environment or `Unreal/Plugins/Airsim` folder of Airsim. On Linux, you can also try modifying the `*.uproject` file to remove the modules entry with the key `AdditionalDependencies`. If the error is about UnrealEnginePython, follow the steps to rebuild the plugin. The plugin cannot be built from a non-empty project folder for some reason.
+3. **Building UnrealEnginePython Plugin fails to build**: I have only gotten it to build when in a completely empty C++ Unreal project so make sure the project is empty. Also the Python dev version needs to be installed.
+   ```bash
+   sudo apt-get install python3.6-dev
+   ```
+   Note sure if this works for anything other than Python 3.6
