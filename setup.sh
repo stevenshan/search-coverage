@@ -32,10 +32,10 @@ check_dir $targettwo
 # move modified setup files to Unreal folder
 
 # replace all instances of clang-3.* to clang-3.5
-mv setup/UnrealEngine/Setup.sh $targetone
+cp setup/UnrealEngine/Setup.sh $targetone
 
 # change CLANG_TO_USE=`which clang` to CLANG_TO_USE=`clang-3.5`
-mv setup/UnrealEngine/BuildThirdParty.sh $targetone
+cp setup/UnrealEngine/BuildThirdParty.sh $targetone
 
 # force use of clang-3.5
-mv setup/UnrealEngine/LinuxToolChain.cs $targettwo
+cp setup/UnrealEngine/LinuxToolChain.cs $targettwo
