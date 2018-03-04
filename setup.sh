@@ -15,7 +15,7 @@ fi
 # make sure the directory exists
 check_dir () {
 	if [ ! -d "$1" ]; then
-		echo "Invalid path given: ${1}"
+		echo "Invalid path given"
 		kill -s TERM $TOP_PID
 	fi
 }
