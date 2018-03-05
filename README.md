@@ -27,7 +27,7 @@ Register an account with Epic Games in order to get access to Unreal Engine Gith
    # the Unreal build was broken a few times so we will get the commit that works
    git checkout af96417313a908b20621a443175ba91683c238c8
    ```
-3. Run the file `setup.sh` from this repository with the path to the Unreal Engine repository. This will replace several setup files in Unreal Engine so that `clang-3.5` is installed, which is necessary for the Python interface that is used.
+3. Run the file `setup_unreal_install.sh` from this repository (in the `setup` folder) with the path to the Unreal Engine repository. This will replace several setup files in Unreal Engine so that `clang-3.5` is installed, which is necessary for the Python interface that is used.
 4. Build Unreal Engine. Go to the Unreal Engine folder:
    ```bash
    ./Setup.sh
