@@ -50,7 +50,7 @@ commands = {
 def send_command (mesg):
 	# split mesg into comamand and parameters
 	try:
-		params = re.findall("([^ ]+)[=]?([^ ]*)", mesg)
+		params = re.findall("([^ ]+)[=]?([^ ]*)", mesg.replace("\n", ""))
 	except:
 		return "Error: couldn't properly regex command message"
 
