@@ -44,7 +44,7 @@ if __name__ == "__main__":
                     sys.exit()
                 else :
                     # print data
-                    sys.stdout.write("<Server>" + data.decode("utf-8"))
+                    sys.stdout.write("<Server> " + data.decode("utf-8"))
              
             #user entered a message
             else :
