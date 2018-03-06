@@ -64,7 +64,19 @@ commands = {
 def send_command (mesg):
 	# split mesg into comamand and parameters
 	try:
-		params = re.findall("([^ ]+)[=]?([^ ]*)", mesg.replace("\n", ""))
+		params = re.findall("(\"([^\"]*)\"|([^ =]+)[=]?\"([^\"]*)\"|([^ =]+)[=]?([^ ]*))", 
+							mesg.replace("\n", ""))
+		for i in range(len(params)):
+			param = params[i]
+			if param[-1] == "" and param[-2] == "":
+				if param[-3] == "":
+					params[i] = (param[1], "")
+				else:
+					params[i] = (param[2], param[3])
+			elif param[-1] == "":
+				params[i] = (param[-2], "")
+			else:
+				params[i] = (param[-2], param[-1])
 	except:
 		return "Error: couldn't properly regex command message"
 
