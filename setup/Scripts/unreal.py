@@ -1,13 +1,14 @@
 import re
+import unreal_engine as ue
 
 def connect_mesg (mesg):
-    print(mesg)
+    ue.print_string(mesg)
 
 def disconnect_mesg (mesg):
-    print(mesg)
+    ue.print_string(mesg)
 
 def log_mesg (mesg):
-    print(mesg)
+    ue.print_string(mesg)
 
 # predeclare commands variable
 commands = {}
@@ -47,13 +48,17 @@ Begin Available Commands
 def _list (params):
 	return str([x for x in commands])
 
+def _print(params):
+	ue.print_string(params["mesg"])
+
 '''
 End Available Commands
 '''
 
 # dictionary of available commands
 commands = {
-	"list": [_list, [], {}]
+	"list": [_list, [], {}],
+	"print": [_print, ["mesg"], {}]
 }
 
 def send_command (mesg):
