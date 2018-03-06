@@ -1,5 +1,14 @@
 import re
 
+def connect_mesg (mesg):
+    print(mesg)
+
+def disconnect_mesg (mesg):
+    print(mesg)
+
+def log_mesg (mesg):
+    print(mesg)
+
 # predeclare commands variable
 commands = {}
 
