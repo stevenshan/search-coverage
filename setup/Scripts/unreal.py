@@ -1,6 +1,23 @@
 import re
 import unreal_engine as ue
 
+# predeclare commands variable
+commands = {}
+
+'''
+Begin Available Commands
+'''
+
+def _list (params):
+	return str([x for x in commands])
+
+def _print(params):
+	ue.print_string(params["mesg"])
+
+'''
+End Available Commands
+'''
+
 def connect_mesg (mesg):
     ue.print_string(mesg)
 
@@ -9,9 +26,6 @@ def disconnect_mesg (mesg):
 
 def log_mesg (mesg):
     ue.print_string(mesg)
-
-# predeclare commands variable
-commands = {}
 
 # try to match labels with params
 def format_params(labels, defaults, params):
@@ -40,20 +54,6 @@ def format_params(labels, defaults, params):
 			final_params[key] = param
 
 	return final_params
-
-'''
-Begin Available Commands
-'''
-
-def _list (params):
-	return str([x for x in commands])
-
-def _print(params):
-	ue.print_string(params["mesg"])
-
-'''
-End Available Commands
-'''
 
 # dictionary of available commands
 commands = {
