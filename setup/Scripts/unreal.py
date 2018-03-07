@@ -4,19 +4,38 @@ import unreal_engine as ue
 # predeclare commands variable
 commands = {}
 
+# global parameters
+global_parameters = {
+	"logging": True
+}
+
 '''
 Begin Available Commands
 '''
 
-def _list (params):
+def _help (params):
 	return str([x for x in commands])
 
-def _print(params):
+def _print (params):
 	ue.print_string(params["mesg"])
+
+def _toggle_log (params):
+	if params["value"] == "on":
+		global_parameters["logging"] = True
+	elif params["value"] == "off":
+		global_parameters["logging"] = False 
+	return "Logging is " + ("on" if global_parameters["logging"] else "off")
 
 '''
 End Available Commands
 '''
+
+# dictionary of available commands
+commands = {
+	"help": [_help, [], {}],
+	"print": [_print, ["mesg"], {}],
+	"log": [_toggle_log, ["value"], {"value": ""}]
+}
 
 def connect_mesg (mesg):
     ue.print_string(mesg)
@@ -25,7 +44,8 @@ def disconnect_mesg (mesg):
     ue.print_string(mesg)
 
 def log_mesg (mesg):
-    ue.print_string(mesg)
+	if global_parameters["logging"]:
+	    ue.print_string(mesg)
 
 # try to match labels with params
 def format_params(labels, defaults, params):
@@ -54,12 +74,6 @@ def format_params(labels, defaults, params):
 			final_params[key] = param
 
 	return final_params
-
-# dictionary of available commands
-commands = {
-	"list": [_list, [], {}],
-	"print": [_print, ["mesg"], {}]
-}
 
 def send_command (mesg):
 	# split mesg into comamand and parameters
