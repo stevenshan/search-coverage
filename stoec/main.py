@@ -150,7 +150,9 @@ if __name__ == "__main__":
 	euclidean_dist=np.zeros((opt.stages,1))
 	
 	full_trajectory = []
-	for k in range(0,opt.stages):#####look if k from 0 or 1
+
+	# number of times to recalculate path
+	for k in range(0,opt.stages):
 		opt.currentStage=k
 		
 		for iagent in range(0,opt.nagents):
@@ -163,15 +165,14 @@ if __name__ == "__main__":
 			xf=xs[-1,:]
 			agents.xi[iagent]=xf
 			# agents.xps[iagent]=np.concatenate(agents.xps[iagent],np.xs[1:,:])
+
 			full_trajectory = full_trajectory + xs.tolist()
 			
 			plt.figure(1)
 			
 			plt.title('Optimal trajectory')
 			
-			
-				
-			
+			print(np.array(full_trajectory)[:,0])
 			plt.plot(np.array(full_trajectory)[:,0],np.array(full_trajectory)[:,1])
 			plt.axis((opt.xmin,opt.xmax,opt.ymin,opt.ymax))
 
