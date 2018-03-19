@@ -96,7 +96,7 @@ class Server:
 
         response = unreal.send_command(mesg)
         if response != None:
-            self.broadcast_data_to(sock, response)
+            self.broadcast_data_to(sock, str(response))
 
 if __name__ == "__main__":
     server = Server()
