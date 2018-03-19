@@ -21,6 +21,11 @@ from evaluateBhattacharyyaDist import evaluateBhattacharyyaDist
 from gen_traj_CE import gen_traj_CE
 # from plot_initial import plot_initial
 
+import airsim
+
+map_width=150
+map_height=150
+
 def initialize_gen_traj_CE():
 	
 	opt=namedtuple('options',['xmin','xmax','ymin','ymax','Lx','Ly','dim','xlb','xub','ng','sn','dt','tf','X','Y','Z','xss','utility','nagents'
@@ -30,9 +35,9 @@ def initialize_gen_traj_CE():
 	ce=namedtuple('cross_entropy',['N','v','iter','sigma','C0','z0','z','C','lb','ub','Flag','Fig'])
 
 	opt.xmin=0
-	opt.xmax=150
+	opt.xmax=map_width
 	opt.ymin=0
-	opt.ymax=150
+	opt.ymax=map_height
 
 	opt.Lx=opt.xmax-opt.xmin
 	opt.Ly=opt.ymax-opt.ymin
@@ -113,7 +118,8 @@ if __name__ == "__main__":
 	opt.utility=utility/utility.sum()
 	opt.nagents=1
 	
-	agents.xi=np.matrix([[120,30,0,90*pi/180],[130,130,0,270*pi/180],[30,120,0,270*pi/180]])
+	#agents.xi=np.matrix([[120,30,0,90*pi/180],[130,130,0,270*pi/180],[30,120,0,270*pi/180]])
+	agents.xi=np.matrix([[map_width/2.0,map_height/2.0,0,90*pi/180],[130,130,0,270*pi/180],[30,120,0,270*pi/180]])
 	agents.xps=agents.xi
 	
 	opt.colors=['m','k','w']
@@ -146,10 +152,14 @@ if __name__ == "__main__":
 	
 	t=time.time()
 	BhattDistance=np.zeros((opt.stages,1))
-	save_traj_stat=np.zeros((150*150,opt.stages))
+	save_traj_stat=np.zeros((map_width * map_height,opt.stages))
 	euclidean_dist=np.zeros((opt.stages,1))
 	
 	full_trajectory = []
+
+	# initialize Airsim setup
+	airsim = airsim.Multirotor()
+	airsim.start()
 
 	# number of times to recalculate path
 	for k in range(0,opt.stages):
@@ -167,12 +177,14 @@ if __name__ == "__main__":
 			# agents.xps[iagent]=np.concatenate(agents.xps[iagent],np.xs[1:,:])
 
 			full_trajectory = full_trajectory + xs.tolist()
-			
+
+			trajectory = xs[:,:2].tolist()
+			airsim.moveOnPath(trajectory, (map_width/2.0, map_height/2.0))
+
 			plt.figure(1)
 			
 			plt.title('Optimal trajectory')
 			
-			print(np.array(full_trajectory)[:,0])
 			plt.plot(np.array(full_trajectory)[:,0],np.array(full_trajectory)[:,1])
 			plt.axis((opt.xmin,opt.xmax,opt.ymin,opt.ymax))
 
