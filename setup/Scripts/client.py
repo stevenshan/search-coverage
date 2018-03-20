@@ -1,5 +1,7 @@
 # telnet program example
 import socket, select, string, sys
+
+import pickle
  
 #main function
 if __name__ == "__main__":
@@ -8,7 +10,7 @@ if __name__ == "__main__":
         print('Usage : python client.py hostname port')
         print("Using default values localhost and port 5000")
         host = "localhost"
-        port = 5000
+        port = 5007
     elif(len(sys.argv) < 3) :
         print('Usage : python client.py hostname port')
         sys.exit()
@@ -49,4 +51,5 @@ if __name__ == "__main__":
             #user entered a message
             else :
                 msg = sys.stdin.readline()
-                s.send(str.encode(msg))
+                data = (((0, None),(1, None)), ("test", [1, 2, 3]))
+                s.send(pickle.dumps(data))
