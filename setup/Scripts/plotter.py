@@ -42,7 +42,8 @@ class Image:
         self.height = height
 
     def set_pixel(self, i, j, pixel):
-        self.image = self.replace_pixel(self.image, i, j, self.width, pixel)
+        if i >= 0 and i < self.height and j >= 0 and j < self.width:
+            self.image = self.replace_pixel(self.image, i, j, self.width, pixel)
 
     def draw_line(self, coord1, coord2, pixel = Pixel.BLACK):
         # starting point of line
@@ -60,24 +61,39 @@ class Image:
             j += slope[1]
 
 class Trace:
-    def __init__(self, obj, width = 256, height = 256, 
+    def __init__(self, uobject, obj, width = 256, height = 256, 
                  view_width = 6000, view_height = 6000, pixel = Pixel.WHITE):
+        self.uobject = uobject
         self.width = width
         self.height = height
         self.view_width = 6000
         self.view_height = 6000
+        self.obj = obj
 
         position = obj.get_actor_location()
-        self.init_i = position["x"]
-        self.init_i = position["y"]
+        self.init_i = position[0]
+        self.init_j = position[1]
 
         self.buffer = Image(width, height, pixel)
         self.texture = ue.create_transient_texture(width, height,  \
                                                    EPixelFormat.PF_R8G8B8A8)
+        self.texture.texture_set_data(self.buffer.image)
         self.texture.auto_root()
 
+    def get_pixel_coord(self, coord):
+        i = (0.5 - (coord[0] - self.init_i) / self.view_height) * self.height
+        j = ((coord[1] - self.init_j) / self.view_width + 0.5) * self.width
+        return round(i), round(j)
+
     def update(self):
-        self.
+        position = self.obj.get_actor_location()
+        coord = self.get_pixel_coord(position)
+        self.buffer.set_pixel(coord[0], coord[1], Pixel.BLACK)
+        self.texture.texture_set_data(self.buffer.image)
+
+    def draw(self):
+        self.update()
+        self.uobject.hud_draw_texture(self.texture, 800, 0, self.width, self.height)
 
 class STOEC:
 
@@ -127,19 +143,16 @@ class STOEC:
         self.clients = []
         for x in self.uobject.all_objects():
             if x.get_name() == "SuvCarPawn_C_0":
-                self.clients.append((x, 0, x.get_actor_location()))
+                self.clients.append(Trace(self.uobject, x))
             elif x.get_name() == "BP_FlyingPawn_C_0":
-                self.clients.append((x, 1, x.get_actor_location()))
+                self.clients.append(Trace(self.uobject, x))
 
 
     def draw_hud(self):
-        # exit if we do not have enough data
-        if not self.trace_texture:
-            return
 
         try:
             for client in self.clients:
-                ue.print_string(str(client[0].get_actor_location()))
+                client.draw()
         except:
             ue.print_string("not initiated")
 
@@ -147,4 +160,4 @@ class STOEC:
         #self.trace_texture.texture_set_data(self.buf.image)
 
         # draw what the player pawn is seeing
-        self.uobject.hud_draw_texture(self.trace_texture, 0, 0, self.component_width, self.component_height)
+        #self.uobject.hud_draw_texture(self.trace_texture, 0, 0, self.component_width, self.component_height)
