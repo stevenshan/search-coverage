@@ -171,7 +171,7 @@ def log_mesg (mesg):
 # used for sending and receiving messages
 class Server:
     RECV_BUFFER = 4096
-    def __init__ (self, port = 5007):
+    def __init__ (self, port = 4000):
         # list to keep track of socket descriptors
         CONNECTION_LIST = []
          
@@ -292,3 +292,9 @@ class STOEC:
 
     def tick(self, delta_time):
         self.server.listen()
+        
+ if __name__ == "__main__":
+    server = Server()
+    while (1):
+        server.listen()
+    server.stop()
