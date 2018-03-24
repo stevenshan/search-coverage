@@ -124,7 +124,7 @@ def send_command (mesg):
             formatted_params = format_params(command[1], command[2], params)
         else:
             if mesg[1][0] not in commands:
-                return "Error: command '" + str(mesga[1][0]) + "' does not exist"
+                return "Error: command '" + str(mesg[1][0]) + "' does not exist"
 
             command = commands[mesg[1][0]]
             formatted_params = {}
@@ -293,7 +293,7 @@ class STOEC:
     def tick(self, delta_time):
         self.server.listen()
         
- if __name__ == "__main__":
+if __name__ == "__main__":
     server = Server()
     while (1):
         server.listen()
