@@ -1,14 +1,16 @@
 # telnet program example
 import socket, select, string, sys
-
+import os
 from threading import *
 
 import pickle
 
 def send_msg(sock):
     while True:
-        data = sys.stdin.readline()
-        data = (((0, None),), (data.replace("\n", ""),))
+        data = sys.stdin.readline().replace("\n", "")
+        if data == "exit":
+            os._exit(1)
+        data = (((0, None),), (data,))
         sock.send(pickle.dumps(data))
         
 def recv_msg(sock):
