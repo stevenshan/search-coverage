@@ -6,6 +6,8 @@ import socket, select, sys
 # to receive structured messages
 import pickle
 
+import re
+
 # predeclare commands variable
 commands = {}
 
@@ -110,7 +112,7 @@ def send_command (mesg):
                         params[i] = (param[-2], "")
                     else:
                         params[i] = (param[-2], param[-1])
-            except:
+            except Exception as e:
                 return "Error: couldn't properly regex command message"
 
             # make sure params is not zero length and first parameter is singleton
