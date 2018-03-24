@@ -8,7 +8,7 @@ import pickle
 def send_msg(sock):
     while True:
         data = sys.stdin.readline()
-        data = (((0, None),(1, None)), (data.replace("\n", ""), [1, 2, 3]))
+        data = (((0, None),), (data.replace("\n", ""),))
         sock.send(pickle.dumps(data))
         
 def recv_msg(sock):
