@@ -6,7 +6,7 @@ class notConnected(Exception): pass
 class notStarted(Exception): pass
 
 # remember Airsim uses reversed z-axis so -100 is 100 units up
-DEFAULT_SPEED = 15
+DEFAULT_SPEED = 5
 DEFAULT_TIMEOUT = 60
 
 class Multirotor():
@@ -36,7 +36,7 @@ class Multirotor():
 		return pos_vector.x_val, pos_vector.y_val, pos_vector.z_val
 
 	# function to start multirotor at specific height (default 100)
-	def start(self, z = -100):
+	def start(self, z = -30):
 		self.reset()
 		self.connect()
 
@@ -52,16 +52,16 @@ class Multirotor():
                            		 DrivetrainType.MaxDegreeOfFreedom, \
                            		 YawMode(False,0), -1, 0)
 
-	# flies quadcopter in 2d plane at specified height (default 100)
+	# flies quadcopter in 2d plane at specified height (default 50)
 	# takes vectors as list of coordinates (x, y)
-	def moveOnPath(self, vectors, offset = (0, 0), z = -100, \
+	def moveOnPath(self, vectors, offset = (0, 0), z = -30, \
 				   speed = DEFAULT_SPEED, timeout = DEFAULT_TIMEOUT):
 		if not self.started: raise notStarted
 
 		# construct list of vector objects for position
 		path = []
 		for vector in vectors:
-			path.append(Vector3r(vector[0] - offset[0], vector[1] - offset[1], z))
+			path.append(Vector3r(offset[0] - vector[0], offset[1] - vector[1], z))
 
 		return self.client.moveOnPath(path, speed, timeout, \
 							   		  DrivetrainType.MaxDegreeOfFreedom, \
