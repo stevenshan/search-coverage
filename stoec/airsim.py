@@ -10,9 +10,10 @@ DEFAULT_SPEED = 5
 DEFAULT_TIMEOUT = 60
 
 class Multirotor():
-	def __init__(self):
+	def __init__(self, scale=(1.0, 1.0)):
 		self.client = MultirotorClient()
 		self.started = False
+		self.scale = scale
 
 	def reset(self):
 		try:
@@ -61,7 +62,8 @@ class Multirotor():
 		# construct list of vector objects for position
 		path = []
 		for vector in vectors:
-			path.append(Vector3r(offset[0] - vector[0], offset[1] - vector[1], z))
+			path.append(Vector3r((vector[1] - offset[0]) * self.scale[0],  \
+								 (vector[0] - offset[1]) * self.scale[1], z))
 
 		return self.client.moveOnPath(path, speed, timeout, \
 							   		  DrivetrainType.MaxDegreeOfFreedom, \
