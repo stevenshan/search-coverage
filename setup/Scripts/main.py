@@ -4,16 +4,27 @@ import unreal_engine as ue
 import socket, select, sys
 
 # to receive structured messages
-import pickle
+import pickle, struct
 
 import re
+from Pixel_Image import Pixel, Image, DEFAULT_DIMENSION
+
+from unreal_engine.classes import MaterialInstance
+from unreal_engine import FColor, FLinearColor
+from unreal_engine.enums import EBlendMode, EPixelFormat
+
+# used to display graph
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 # predeclare commands variable
 commands = {}
 
 # global parameters
 global_parameters = {
-    "logging": True
+    "logging": True,
+    "root": None
 }
 
 '''
@@ -32,6 +43,45 @@ def _toggle_log (params):
     elif params["value"] == "off":
         global_parameters["logging"] = False 
     return "Logging is " + ("on" if global_parameters["logging"] else "off")
+
+def _get_ortho_width (params):
+    root = global_parameters["root"]
+    if root == None:
+        return "Error: no root uobject"
+    try:
+        orthowidth = root.uobject.get_owner().mapCapture.get_property('OrthoWidth')
+    except:
+        return "Error: could not get orthographic width"
+
+    result = ""
+    try:
+        result = str(int(orthowidth))
+    except:
+        return "Error: could not convert orthographic width to string"
+    else:
+        return result
+
+def _set_ortho_width(params):
+    root = global_parameters["root"]
+    if root == None:
+        return "Error: no root uobject"
+    try:
+        root.uobject.get_owner().mapCapture.set_property('OrthoWidth', float(params["width"]))
+    except Exception as e:
+        return "Error: " + str(e)
+    else:
+        return "Success"
+
+def _display_graph(params):
+    root = global_parameters["root"]
+    try:
+        if not root.mat_valid:
+            return "Error: could not load material"
+        root.texture.texture_set_data(params["figure"])
+    except Exception as e:
+        return "Error: Could not draw graph; " + str(e)
+    else:
+        return "Success"
     
 '''
 End Available Commands
@@ -41,7 +91,10 @@ End Available Commands
 commands = {
     "help": [_help, [], {}],
     "print": [_print, ["mesg"], {}],
-    "log": [_toggle_log, ["value"], {"value": ""}]
+    "log": [_toggle_log, ["value"], {"value": ""}],
+    "getOrthoWidth": [_get_ortho_width, [], {}],
+    "setOrthoWidth": [_set_ortho_width, ["width"], {"width": 6000}],
+    "displayGraph": [_display_graph, ["figure"], {}]
 }
 
 class unreal:
@@ -170,10 +223,33 @@ def disconnect_mesg (sock):
 def log_mesg (mesg):
     unreal.log_mesg(mesg.rstrip("\n\r"))
 
+'''
+Method for receiving data from socket
+https://stackoverflow.com/questions/17667903/python-socket-receive-large-amount-of-data
+'''
+def recv_msg(sock):
+    # Read message length and unpack it into an integer
+    raw_msglen = recvall(sock, 4)
+    if not raw_msglen:
+        return None
+    msglen = struct.unpack('>I', raw_msglen)[0]
+    # Read the message data
+    return recvall(sock, msglen)
+
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = b''
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
+
 # used for sending and receiving messages
 class Server:
     RECV_BUFFER = 4096
-    def __init__ (self, port = 4000):
+    def __init__ (self, port = 4001):
         # list to keep track of socket descriptors
         CONNECTION_LIST = []
          
@@ -210,11 +286,12 @@ class Server:
             else:
                 # data recieved from client, process it
                 try:
-                    data = sock.recv(self.RECV_BUFFER)
+                    data = recv_msg(sock)
                     if data:
                         self.receive_data(sock, data)
                  
-                except:
+                except Exception as e:
+                    ue.print_string(str(e))
                     self.disconnect(sock)
                     continue
 
@@ -282,8 +359,7 @@ class Server:
         else:
             response = send_command(raw_data)
 
-        if response != None:
-            self.broadcast_data_to(sock, str(response))
+        self.broadcast_data_to(sock, ">" + (str(response) if response != None else ""))
 
         log_mesg("\r" + '<' + str(sock.getpeername()) + '> sent a message')
 
@@ -291,6 +367,27 @@ class Server:
 class STOEC:
     def begin_play(self):
         self.server = Server()
+        global_parameters["root"] = self
+
+
+        # initialize texture for graph
+        self.texture = ue.create_transient_texture(DEFAULT_DIMENSION, DEFAULT_DIMENSION, \
+                                                   EPixelFormat.PF_R8G8B8A8)
+
+        # initialize texture with blank image
+        self.texture.texture_set_data(Image.init())
+
+        # try to load texture to draw trace to
+        self.mat_valid = False
+        try:
+            mat = ue.load_object(MaterialInstance, "/Game/STOEC/python_graph_inst")
+        except:
+            ue.log("Failed to load python_mat material instance")
+            ue.print_string("Failed to load python_mat material instance")
+            return
+        else:
+            mat.set_material_texture_parameter("Graph", self.texture)
+            self.mat_valid = True
 
     def tick(self, delta_time):
         self.server.listen()
