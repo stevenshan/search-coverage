@@ -170,6 +170,10 @@ if __name__ == "__main__":
 
     # number of times to recalculate path
     for k in range(0,opt.stages):
+        while (airsim.getQueueLength() > 700):
+            time.sleep(0.2)
+
+
         opt.currentStage=k
         
         for iagent in range(0,opt.nagents):
@@ -186,6 +190,7 @@ if __name__ == "__main__":
             full_trajectory = full_trajectory + xs.tolist()
 
             trajectory = xs[:,:2].tolist()
+
             airsim.moveOnPath(trajectory, (map_width/2.0, map_height/2.0))
 
             plt.figure(1)

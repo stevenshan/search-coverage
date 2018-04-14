@@ -375,7 +375,7 @@ class STOEC:
                                                    EPixelFormat.PF_R8G8B8A8)
 
         # initialize texture with blank image
-        self.texture.texture_set_data(Image.init())
+        self.texture.texture_set_data(Image.init(256, 256, Pixel.TRANSPARENT))
 
         # try to load texture to draw trace to
         self.mat_valid = False
