@@ -161,6 +161,7 @@ if __name__ == "__main__":
     # connect to simulation (note: x100 scale for Airsim NED coordinates)
     simulation = airsim_simulation.Simulation() 
     sim_width = simulation.getOrthoWidth()
+
     sim_scale = (sim_width / (map_width * 100.0)), \
                 (sim_width / (map_height* 100.0))
 

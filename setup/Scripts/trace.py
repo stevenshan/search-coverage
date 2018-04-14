@@ -14,13 +14,16 @@ from Pixel_Image import Pixel, Image, DEFAULT_DIMENSION
 
 class Trace:
     def __init__(self, uobject, obj, width = DEFAULT_DIMENSION, \
-                 height = DEFAULT_DIMENSION, view_width = 6000, \
-                 view_height = 6000, pixel = Pixel.TRANSPARENT):
+                 height = DEFAULT_DIMENSION, pixel = Pixel.TRANSPARENT):
+                 
+        # get camera width
+        cameraDim = uobject.mapCapture.get_property('OrthoWidth')
+        
         self.uobject = uobject
         self.width = width
         self.height = height
-        self.view_width = 6000
-        self.view_height = 6000
+        self.view_width = cameraDim
+        self.view_height = cameraDim
         self.obj = obj
 
         position = obj.get_actor_location()
@@ -43,7 +46,7 @@ class traceClass:
 
     def begin_play(self):
 
-        self.width= DEFAULT_DIMENSION
+        self.width = DEFAULT_DIMENSION
         self.height = DEFAULT_DIMENSION 
 
         self.i = 0
