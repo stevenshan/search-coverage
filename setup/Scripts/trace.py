@@ -39,7 +39,7 @@ class Trace:
         coord = self.get_pixel_coord(position)
         self.buffer.set_pixel(coord[0], coord[1], Pixel.BLACK)
 
-class trace:
+class traceClass:
 
     def begin_play(self):
 
