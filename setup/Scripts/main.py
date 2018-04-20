@@ -82,6 +82,17 @@ def _display_graph(params):
         return "Error: Could not draw graph; " + str(e)
     else:
         return "Success"
+
+def _display_pdf(params):
+    root = global_parameters["root"]
+    try:
+        if not root.mat_valid:
+            return "Error: could not load material"
+        root.pdftexture.texture_set_data(params["figure"])
+    except Exception as e:
+        return "Error: Could not draw graph; " + str(e)
+    else:
+        return "Success"
     
 '''
 End Available Commands
@@ -94,7 +105,8 @@ commands = {
     "log": [_toggle_log, ["value"], {"value": ""}],
     "getOrthoWidth": [_get_ortho_width, [], {}],
     "setOrthoWidth": [_set_ortho_width, ["width"], {"width": 6000}],
-    "displayGraph": [_display_graph, ["figure"], {}]
+    "displayGraph": [_display_graph, ["figure"], {}],
+    "displayPDF": [_display_pdf, ["figure"], {}]
 }
 
 class unreal:
@@ -374,19 +386,26 @@ class STOEC:
         self.texture = ue.create_transient_texture(DEFAULT_DIMENSION, DEFAULT_DIMENSION, \
                                                    EPixelFormat.PF_R8G8B8A8)
 
+        # initialize texture for probability density function
+        self.pdftexture = ue.create_transient_texture(DEFAULT_DIMENSION, DEFAULT_DIMENSION, \
+                                                   EPixelFormat.PF_R8G8B8A8)
+
         # initialize texture with blank image
         self.texture.texture_set_data(Image.init(256, 256, Pixel.TRANSPARENT))
+        self.pdftexture.texture_set_data(Image.init(256, 256, Pixel.TRANSPARENT))
 
         # try to load texture to draw trace to
         self.mat_valid = False
         try:
             mat = ue.load_object(MaterialInstance, "/Game/STOEC/python_graph_inst")
+            pdfmat = ue.load_object(MaterialInstance, "/Game/STOEC/python_pdfgraph_inst")
         except:
             ue.log("Failed to load python_mat material instance")
             ue.print_string("Failed to load python_mat material instance")
             return
         else:
             mat.set_material_texture_parameter("Graph", self.texture)
+            pdfmat.set_material_texture_parameter("Graph", self.pdftexture)
             self.mat_valid = True
 
     def tick(self, delta_time):

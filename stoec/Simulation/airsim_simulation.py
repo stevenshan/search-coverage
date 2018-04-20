@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 import pickle, struct
 
-class Simulation:
+class AirsimSimulation:
     def __init__(self):
         host = "localhost"
         port = 4001
@@ -25,11 +25,18 @@ class Simulation:
         data = re.findall("[0-9]+", self.sock.recv(4096).decode("utf-8"))
         return int("".join(data))
 
-    # display a matplotlib plot
-    def displayPlot(self, fig):
-        data = (((0, None),(1, "figure")), ("displayGraph", fig.canvas.buffer_rgba()))
+    def sendImage(self, buffer, command):
+        data = (((0, None),(1, "figure")), (command, buffer))
         data = pickle.dumps(data)
         msg = struct.pack('>I', len(data)) + data
         self.sock.sendall(msg)
 
-        data = re.findall("[0-9]+", self.sock.recv(4096).decode("utf-8"))
+        return re.findall("[0-9]+", self.sock.recv(4096).decode("utf-8"))
+
+    # display a matplotlib plot
+    def displayPlot(self, rgb):
+        return self.sendImage(rgb, "displayGraph")
+
+    # display a matplotlib plot
+    def displayPDF(self, rgb):
+        return self.sendImage(rgb, "displayPDF")

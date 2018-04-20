@@ -21,8 +21,7 @@ from evaluateBhattacharyyaDist import evaluateBhattacharyyaDist
 from gen_traj_CE import gen_traj_CE
 # from plot_initial import plot_initial
 
-import airsim
-import airsim_simulation
+from Simulation import Simulation
 
 map_width=150
 map_height=150
@@ -106,7 +105,19 @@ if __name__ == "__main__":
     utility=np.matrix(np.reshape(utility,X.shape))
     temp=np.matrix(np.ones(img.shape)-img)
     utility=np.matrix(np.multiply(utility,temp),)
-    
+
+
+    '''
+    add extra objects to utility
+    '''
+    im=cv2.imread('images/terrain_mask.mask.png',0) #read image
+    im=cv2.normalize(im.astype('float'), None, 0.0, 1.0, cv2.NORM_MINMAX) #normalize 
+    im=cv2.resize(im,(opt.ng[0],opt.ng[1]), interpolation=cv2.INTER_LINEAR) 
+    im=np.flipud(im)
+    temp=np.matrix(np.ones(im.shape)-im)
+    utility = im
+
+
     opt.X=np.matrix(X)
     opt.Y=np.matrix(Y)
     opt.Z=np.matrix(np.zeros(X.shape))
@@ -158,22 +169,11 @@ if __name__ == "__main__":
     
     full_trajectory = []
 
-    # connect to simulation (note: x100 scale for Airsim NED coordinates)
-    simulation = airsim_simulation.Simulation() 
-    sim_width = simulation.getOrthoWidth()
-
-    sim_scale = (sim_width / (map_width * 100.0)), \
-                (sim_width / (map_height* 100.0))
-
-    # initialize Airsim setup
-    airsim = airsim.Multirotor(sim_scale)
-    airsim.start()
+    simulation = Simulation(utility, (opt.xmin, opt.xmax), (opt.ymin, opt.ymax))
 
     # number of times to recalculate path
     for k in range(0,opt.stages):
-        while (airsim.getQueueLength() > 700):
-            time.sleep(0.2)
-
+        simulation.wait()
 
         opt.currentStage=k
         
@@ -192,14 +192,16 @@ if __name__ == "__main__":
 
             trajectory = xs[:,:2].tolist()
 
-            airsim.moveOnPath(trajectory, (map_width/2.0, map_height/2.0))
+            simulation.trajectory(trajectory)
 
+            '''
             plt.figure(1)
             
             plt.title('Optimal trajectory')
             
             plt.plot(np.array(full_trajectory)[:,0],np.array(full_trajectory)[:,1])
             plt.axis((opt.xmin,opt.xmax,opt.ymin,opt.ymax))
+            '''
 
 
             if opt.algorithm=='ergodic':
@@ -207,7 +209,6 @@ if __name__ == "__main__":
 
             #if opt.sensorMode=='largeFootPrint' and opt.algorithm=='KL':
                 #gp
-                
 
             if opt.algorithm=='KL' and opt.sensorMode=='smallFootPrint' or opt.algorithm=='ergodic':
                 
@@ -222,15 +223,14 @@ if __name__ == "__main__":
         euclidean_dist[k,0]=np.square(traj_stat_normalized-opt.utility).sum()
         BhattDistance[k,0]=evaluateBhattacharyyaDist(traj_stat_normalized,erg.mu)
 
-        print("draw")
-
+        '''
         fig = plt.figure(1)
         fig.set_dpi(50.0)
         fig.set_figwidth(256/50.0)
         fig.set_figheight(256/50.0)
-
-        # plot a simple graph with a label on the y axis
-        plt.plot([1, 2, 3, 4])
-        plt.ylabel('some numbers')
         fig.canvas.draw()
-        simulation.displayPlot(fig)
+        '''
+
+        simulation.updatePlot()
+
+
