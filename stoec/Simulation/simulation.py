@@ -1,15 +1,19 @@
 import time
 
+import config
 import airsim_simulation
 import airsim_client
 from stoec_utilities import Utilities
 
 # run simulation with connecting to Airsim
-HEADLESS = False
+HEADLESS = True
 
 class Simulation:
     # call before beginning of loop finding new trajectories
     def __init__(self, utility, xrange, yrange):
+        # setup configuration
+        config.setup()
+
         self.xmin, self.xmax = xrange
         self.ymin, self.ymax = yrange
         self.xrange = xrange
@@ -18,7 +22,7 @@ class Simulation:
         # generate utility map image
         self.utilities = Utilities()
         utilityRGB = self.utilities.getUtilityRGB(utility)
-        self.utilities.displayImage(utilityRGB)
+        #self.utilities.displayImage(utilityRGB)
 
         if not HEADLESS:
             # connect to simulation (note: x100 scale for Airsim NED coordinates)
