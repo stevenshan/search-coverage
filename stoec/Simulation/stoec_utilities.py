@@ -88,6 +88,13 @@ class Utilities():
         img = Image.frombytes("RGBA", (n, n), rgba) 
         img.show()
 
+    @staticmethod
+    def saveImage(rgba, location):
+        l = len(rgba)
+        n = int(math.sqrt(l // 4))
+        img = Image.frombytes("RGBA", (n, n), rgba) 
+        img.save(location)
+
     def displayTrajectory(self):
         n = DEFAULT_WIDGET_DIMENSION
         buffer = Image.frombytes("RGBA", (n, n), self.getTrajectoryRGB())

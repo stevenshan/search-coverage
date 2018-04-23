@@ -2,6 +2,7 @@ from PythonClient.AirSimClient import *
 import sys
 import time
 import _thread as thread
+import config
 
 class notConnected(Exception): pass
 class notStarted(Exception): pass
@@ -32,7 +33,7 @@ def tick(self):
             img_rgba = np.flipud(img_rgba)
 
             # write to png 
-            self.client.write_png("images/camera/" + str(index) + ".png", img_rgba) 
+            self.client.write_png(config.get_image_dir() + str(index) + ".png", img_rgba) 
         else:
             time.sleep(0.2)
 
@@ -59,7 +60,8 @@ class Multirotor():
         self.client.takeoff()
 
     def getImage(self):
-        responses = self.client.simGetImages([ImageRequest(1, AirSimImageType.Scene, False, False)])
+        request = [ImageRequest(1, AirSimImageType.Scene, False, False)]
+        responses = self.client.simGetImages(request)
         response = responses[0]
         return response
 

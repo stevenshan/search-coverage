@@ -6,13 +6,13 @@ import airsim_client
 from stoec_utilities import Utilities
 
 # run simulation with connecting to Airsim
-HEADLESS = True
+HEADLESS = False
 
 class Simulation:
     # call before beginning of loop finding new trajectories
     def __init__(self, utility, xrange, yrange):
         # setup configuration
-        config.setup()
+        config.setup(xrange, yrange)
 
         self.xmin, self.xmax = xrange
         self.ymin, self.ymax = yrange
@@ -23,6 +23,8 @@ class Simulation:
         self.utilities = Utilities()
         utilityRGB = self.utilities.getUtilityRGB(utility)
         #self.utilities.displayImage(utilityRGB)
+
+        self.utilities.saveImage(utilityRGB, config.get_pdf_location())
 
         if not HEADLESS:
             # connect to simulation (note: x100 scale for Airsim NED coordinates)
@@ -50,6 +52,10 @@ class Simulation:
         if not HEADLESS:
             self.airsim.moveOnPath(trajectory, \
                 ((self.xmax - self.xmin) / 2.0, (self.ymax - self.ymin) / 2.0))
+
+        # log changes
+        config.write_trajectory(trajectory)
+        config.write_log()
 
     def displayPlot(self, fig):
         if not HEADLESS:
