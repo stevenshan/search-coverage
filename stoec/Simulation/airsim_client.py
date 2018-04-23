@@ -20,6 +20,19 @@ def tick(self):
             self.client.moveOnPath(path, DEFAULT_SPEED, DEFAULT_TIMEOUT, \
                 DrivetrainType.MaxDegreeOfFreedom, YawMode(False, 0), -1, 0)
             self.moveQueue = self.moveQueue[100:]
+
+            response = self.getImage();
+            # get numpy array
+            img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
+
+            # reshape array to 4 channel image array H X W X 4
+            img_rgba = img1d.reshape(response.height, response.width, 4)  
+
+            # original image is fliped vertically
+            img_rgba = np.flipud(img_rgba)
+
+            # write to png 
+            self.client.write_png("images/camera/" + str(index) + ".png", img_rgba) 
         else:
             time.sleep(0.2)
 
@@ -29,7 +42,7 @@ class Multirotor():
         self.started = False
         self.scale = scale
         self.moveQueue = []
-        thread.start_new_thread( tick, (self,) )
+        thread.start_new_thread(tick, (self,))
 
     def reset(self):
         try:

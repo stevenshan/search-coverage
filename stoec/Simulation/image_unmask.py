@@ -4,7 +4,7 @@ Makes all pixels that are RGB(44, 2, 122) white and all other pixels
 transparent black
 '''
 
-from PIL import Image
+from PIL import Image, ImageFilter
 import os.path
 import sys
 
@@ -39,5 +39,6 @@ if __name__ == "__main__":
 			counter += 5
 
 	img = Image.frombytes("RGBA", (w, h), new_buffer)
+	blurred = img.filter(ImageFilter.GaussianBlur(radius=10))
 	file = os.path.splitext(filename)
-	img.save(file[0] + ".mask" + file[1])
+	blurred.save(file[0] + ".mask" + file[1])
