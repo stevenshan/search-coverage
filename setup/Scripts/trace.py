@@ -7,6 +7,7 @@ from unreal_engine.enums import EBlendMode, EPixelFormat
 import os
 
 from unreal_engine.classes import MaterialInstance
+from unreal_engine.classes import Actor
 
 import math
 import random
@@ -52,6 +53,10 @@ class traceClass:
         self.i = 0
         self.j = 0
 
+        firstAgentFound = False 
+        self.firstAgent = None
+        self.followCamera = None
+
         # make list of agents
         self.clients = []
         for x in self.uobject.all_objects():
@@ -62,8 +67,16 @@ class traceClass:
             else:
                 if name == "SuvCarPawn_C_0":
                     self.clients.append(Trace(self.uobject, x))
+                    if not firstAgentFound:
+                        firstAgentFound = True
+                        self.firstAgent = x 
                 elif name == "BP_FlyingPawn_C_0":
                     self.clients.append(Trace(self.uobject, x))
+                    if not firstAgentFound:
+                        firstAgentFound = True
+                        self.firstAgent = x 
+                elif name == "followCamera_56":
+                    self.followCamera = x
 
         self.texture = ue.create_transient_texture(self.width, self.height, \
                                                    EPixelFormat.PF_R8G8B8A8)
@@ -82,6 +95,10 @@ class traceClass:
 
     def tick(self, delta_time):
         if not self.valid: return
+
+        if self.firstAgent != None and self.followCamera != None:
+            target_location = self.firstAgent.get_actor_location()
+            self.followCamera.set_actor_location(target_location)
 
         for client in self.clients:
             client.update()
