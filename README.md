@@ -57,3 +57,7 @@ Register an account with Epic Games in order to get access to Unreal Engine Gith
    sudo apt-get install python3.6-dev
    ```
    Note sure if this works for anything other than Python 3.6
+
+## Notes
+
+1. To get camera view from quadcopter, start running in unreal editor, look in World Outliner menu for BP_PIPCamera and hit edit, then look for the SceneCaptureComponent component, and set the texture output accordinly
