@@ -56,6 +56,7 @@ class traceClass:
         firstAgentFound = False 
         self.firstAgent = None
         self.followCamera = None
+        self.stoecActor = None
 
         # make list of agents
         self.clients = []
@@ -77,6 +78,14 @@ class traceClass:
                         self.firstAgent = x 
                 elif name == "followCamera_56":
                     self.followCamera = x
+                elif name == "stoec_actor_612":
+                    self.stoecActor = x
+
+        if self.stoecActor != None and self.firstAgent != None:
+            target_location = self.firstAgent.get_actor_location()
+            origin_location = self.stoecActor.get_actor_location()
+            target_location.z = origin_location.z
+            self.stoecActor.set_actor_location(target_location)
 
         self.texture = ue.create_transient_texture(self.width, self.height, \
                                                    EPixelFormat.PF_R8G8B8A8)

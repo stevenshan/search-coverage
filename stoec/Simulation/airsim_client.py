@@ -118,6 +118,7 @@ class Multirotor():
         return self.client.moveOnPath(path, speed, timeout, \
                                       DrivetrainType.MaxDegreeOfFreedom, \
                                       YawMode(False, 0), -1, 0)
+        
     def stop(self):
         self.client.land()
         self.client.armDisarm(False)
